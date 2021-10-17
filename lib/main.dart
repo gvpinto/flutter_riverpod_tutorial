@@ -25,16 +25,31 @@ final valueProvider = Provider<int>((ref) {
   return 36;
 });
 
-class MyHomePage extends ConsumerWidget {
+// 1. Extend [ConsumerStatefulWidget]
+class MyHomePage extends ConsumerStatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+// 2. Extend [ConsumerState]
+class _MyHomePageState extends ConsumerState<MyHomePage> {
+  @override
+  void initState() {
+    super.initState();
+    // 3. use ref.read() in the widget life-cycle methods
+    final value = ref.read(valueProvider);
+    debugPrint('value: $value');
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final value = ref.watch(valueProvider);
     return Scaffold(
       body: Center(
         child: Text(
-          'Value: $value 👍',
+          'Value: $value',
           style: Theme.of(context).textTheme.headline4,
         ),
       ),
