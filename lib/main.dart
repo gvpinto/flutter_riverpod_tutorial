@@ -21,6 +21,10 @@ class MyApp extends StatelessWidget {
   }
 }
 
+final valueProvider = Provider<int>((ref) {
+  return 36;
+});
+
 class MyHomePage extends StatelessWidget {
   const MyHomePage({Key? key}) : super(key: key);
 
@@ -28,9 +32,14 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Text(
-          'Some text here 👍',
-          style: Theme.of(context).textTheme.headline4,
+        child: Consumer(
+          builder: (_, WidgetRef ref, __) {
+            final value = ref.watch(valueProvider);
+            return Text(
+              'Value: $value 👍',
+              style: Theme.of(context).textTheme.headline4,
+            );
+          },
         ),
       ),
     );
