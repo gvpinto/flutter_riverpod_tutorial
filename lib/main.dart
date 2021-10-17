@@ -25,21 +25,17 @@ final valueProvider = Provider<int>((ref) {
   return 36;
 });
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends ConsumerWidget {
   const MyHomePage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final value = ref.watch(valueProvider);
     return Scaffold(
       body: Center(
-        child: Consumer(
-          builder: (_, WidgetRef ref, __) {
-            final value = ref.watch(valueProvider);
-            return Text(
-              'Value: $value 👍',
-              style: Theme.of(context).textTheme.headline4,
-            );
-          },
+        child: Text(
+          'Value: $value 👍',
+          style: Theme.of(context).textTheme.headline4,
         ),
       ),
     );
