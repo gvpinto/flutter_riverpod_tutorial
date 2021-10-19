@@ -21,37 +21,30 @@ class MyApp extends StatelessWidget {
   }
 }
 
-final valueProvider = Provider<int>((ref) {
-  return 36;
+final counterStateProvider = StateProvider<int>((ref) {
+  return 0;
 });
 
-// 1. Extend [ConsumerStatefulWidget]
-class MyHomePage extends ConsumerStatefulWidget {
+class MyHomePage extends ConsumerWidget {
   const MyHomePage({Key? key}) : super(key: key);
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    // 1. watch the counterStateProvider
+    final counter = ref.watch(counterStateProvider);
 
-// 2. Extend [ConsumerState]
-class _MyHomePageState extends ConsumerState<MyHomePage> {
-  @override
-  void initState() {
-    super.initState();
-    // 3. use ref.read() in the widget life-cycle methods
-    final value = ref.read(valueProvider);
-    debugPrint('value: $value');
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final value = ref.watch(valueProvider);
     return Scaffold(
       body: Center(
-        child: Text(
-          'Value: $value',
-          style: Theme.of(context).textTheme.headline4,
-        ),
+        // 2. this time we read counter.state
+        child: Text('Value: ${counter.state}',
+            style: Theme.of(context).textTheme.headline4),
+      ),
+      floatingActionButton: FloatingActionButton(
+        // access the provider via ref.read(), then increment its state.
+        // We should always use ref.read() rather than ref.watch()
+        // to access providers inside a callback
+        onPressed: () => ref.read(counterStateProvider).state++,
+        child: Icon(Icons.add),
       ),
     );
   }
