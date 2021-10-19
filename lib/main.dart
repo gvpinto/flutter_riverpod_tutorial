@@ -30,6 +30,18 @@ class MyHomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // ref.listen() gives us a callback that executes when the provider value
+    // changes, not when the build() method is called.
+    // Hence we can use it to run any asynchronous code
+    // (such as a network request), just like we do with
+    // regular button callbacks.
+    ref.listen(counterStateProvider, (StateController<int> counterState) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Value is ${counterState.state}'),
+        ),
+      );
+    });
     // 1. watch the counterStateProvider
     final counter = ref.watch(counterStateProvider);
 
