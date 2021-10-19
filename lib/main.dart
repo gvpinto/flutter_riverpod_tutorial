@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod_tutorial/clock.dart';
+import 'package:intl/intl.dart';
 
 void main() {
   runApp(
@@ -21,8 +23,8 @@ class MyApp extends StatelessWidget {
   }
 }
 
-final counterStateProvider = StateProvider<int>((ref) {
-  return 0;
+final clockProvider = StateNotifierProvider<Clock, DateTime>((ref) {
+  return Clock();
 });
 
 class MyHomePage extends ConsumerWidget {
@@ -30,34 +32,22 @@ class MyHomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // ref.listen() gives us a callback that executes when the provider value
-    // changes, not when the build() method is called.
-    // Hence we can use it to run any asynchronous code
-    // (such as a network request), just like we do with
-    // regular button callbacks.
-    ref.listen(counterStateProvider, (StateController<int> counterState) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Value is ${counterState.state}'),
-        ),
-      );
-    });
-    // 1. watch the counterStateProvider
-    final counter = ref.watch(counterStateProvider);
+    // this line is used to watch the provider's *state*
+    // to get an instance of the clock itself,
+    // call `ref.watch(clockProvider.notifier)`
+    final currentTime = ref.watch(clockProvider);
+    // format the time as `hh:mm:ss`
+    // ref.watch(clockProvider) returns the provider's state.
+    // To get access to the underlying state notifier object,
+    // call ref.watch(clockProvider.notifier) instead.
+    final timeFormatted = DateFormat.Hms().format(currentTime);
 
     return Scaffold(
-      body: Center(
-        // 2. this time we read counter.state
-        child: Text('Value: ${counter.state}',
-            style: Theme.of(context).textTheme.headline4),
+        body: Center(
+      child: Text(
+        timeFormatted,
+        style: Theme.of(context).textTheme.headline4,
       ),
-      floatingActionButton: FloatingActionButton(
-        // access the provider via ref.read(), then increment its state.
-        // We should always use ref.read() rather than ref.watch()
-        // to access providers inside a callback
-        onPressed: () => ref.read(counterStateProvider).state++,
-        child: Icon(Icons.add),
-      ),
-    );
+    ));
   }
 }
