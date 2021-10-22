@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod_tutorial/clock.dart';
-import 'package:intl/intl.dart';
 
 void main() {
   runApp(
@@ -23,8 +21,12 @@ class MyApp extends StatelessWidget {
   }
 }
 
-final clockProvider = StateNotifierProvider<Clock, DateTime>((ref) {
-  return Clock();
+final futureProvider = FutureProvider<int>((ref) {
+  return Future.value(36);
+});
+
+final streamProvider = StreamProvider<int>((ref) {
+  return Stream.fromIterable([36, 72]);
 });
 
 class MyHomePage extends ConsumerWidget {
@@ -32,22 +34,16 @@ class MyHomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // this line is used to watch the provider's *state*
-    // to get an instance of the clock itself,
-    // call `ref.watch(clockProvider.notifier)`
-    final currentTime = ref.watch(clockProvider);
-    // format the time as `hh:mm:ss`
-    // ref.watch(clockProvider) returns the provider's state.
-    // To get access to the underlying state notifier object,
-    // call ref.watch(clockProvider.notifier) instead.
-    final timeFormatted = DateFormat.Hms().format(currentTime);
-
+    final streamAsyncValue = ref.watch(streamProvider);
+    // final futureAsyncValue = ref.watch(futureProvider); // same syntax
     return Scaffold(
-        body: Center(
-      child: Text(
-        timeFormatted,
-        style: Theme.of(context).textTheme.headline4,
+      body: Center(
+        child: streamAsyncValue.when(
+          data: (data) => Text('Value: $data'),
+          loading: (previous) => const CircularProgressIndicator(),
+          error: (e, st, previous) => Text('Error: $e'),
+        ),
       ),
-    ));
+    );
   }
 }
